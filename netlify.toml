@@ -1,0 +1,16 @@
+# Netlify configuration for this Next.js app
+# This file does NOT include secret values — set those in the Netlify UI.
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+# Allow the secrets scanner to ignore these environment variable NAMES
+# (values should be set in Netlify site settings, not committed)
+  SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY"
+  # Recommend a supported node version
+  NODE_VERSION = "18"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
