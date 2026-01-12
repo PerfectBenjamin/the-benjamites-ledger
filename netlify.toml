@@ -9,6 +9,8 @@
 # Allow the secrets scanner to ignore these environment variable NAMES
 # (values should be set in Netlify site settings, not committed)
   SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_SUPABASE_URL,NEXT_PUBLIC_SUPABASE_ANON_KEY,NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY"
+  # Paths to omit from Netlify secrets scanning (build output / server bundles)
+  SECRETS_SCAN_OMIT_PATHS = ".next,.netlify/.next,.netlify/functions-internal,.next/**,.netlify/functions-internal/**"
   # Require Node.js >=20.9.0 for Next.js 16; choose a stable 20.x release
   NODE_VERSION = "20.14.0"
 
