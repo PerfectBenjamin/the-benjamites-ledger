@@ -10,9 +10,8 @@ const josefin = Josefin_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Debt Ledger - Cement Distributor",
+  title: "The Benjamites Ledger",
   description: "Manage your customer debts and payments",
-  generator: "v0.app",
   viewport: {
     width: "device-width",
     initialScale: 1,
