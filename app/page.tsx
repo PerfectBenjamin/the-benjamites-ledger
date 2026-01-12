@@ -85,7 +85,7 @@ async function getCustomerCount() {
 }
 
 export const metadata = {
-  title: "Debt Ledger - Cement Distributor",
+  title: "The Benjamites Ledger",
   description: "Manage your customer debts and payments",
 };
 

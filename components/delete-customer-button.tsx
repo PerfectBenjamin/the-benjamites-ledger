@@ -15,13 +15,21 @@ export default function DeleteCustomerButton({
   const [loading, setLoading] = useState(false);
 
   const handleDelete = async () => {
-    if (
-      !confirm(
-        "Are you sure you want to delete this customer? This will remove all their transactions."
-      )
-    )
-      return;
+    const pin = prompt("Enter PIN to delete this customer:");
+    if (!pin) return;
     setLoading(true);
+    try {
+      const res = await fetch("/api/verify-pin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pin }),
+      });
+      const json = await res.json();
+      if (!json?.ok) {
+        alert("Invalid PIN. Deletion cancelled.");
+        setLoading(false);
+        return;
+      }
     try {
       const supabase = getSupabaseClient();
       // Delete transactions first (if you want cascade, adjust DB rules)
