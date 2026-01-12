@@ -1,41 +1,44 @@
-import { NextResponse } from "next/server";
-import bcrypt from "bcryptjs";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
-
-export async function POST(req: Request) {
+export async function POST(request: NextRequest) {
   try {
-    const body = await req.json();
-    const pin: string | undefined = body?.pin;
-    if (!pin)
-      return NextResponse.json({ ok: false, error: "no_pin" }, { status: 400 });
+    const { pin } = await request.json();
 
+    if (!pin) {
+      return NextResponse.json({ error: "PIN is required" }, { status: 400 });
+    }
+
+    // Create a Supabase client with service role for server-side access
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY ||
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    );
+
+    // Fetch the stored PIN from settings table
     const { data, error } = await supabase
-      .from("app_settings")
+      .from("settings")
       .select("value")
       .eq("key", "delete_pin")
       .single();
 
-    if (error)
+    if (error) {
+      console.error("Error fetching PIN:", error);
       return NextResponse.json(
-        { ok: false, error: "db_error" },
+        { error: "Failed to verify PIN" },
         { status: 500 }
       );
-    if (!data || !data.value)
-      return NextResponse.json(
-        { ok: false, error: "not_set" },
-        { status: 404 }
-      );
+    }
 
-    const matches = await bcrypt.compare(pin, data.value);
-    return NextResponse.json({ ok: matches });
-  } catch (err) {
+    // Compare the provided PIN with the stored PIN
+    const isValid = data?.value === pin;
+
+    return NextResponse.json({ valid: isValid });
+  } catch (error) {
+    console.error("Error in verify-pin route:", error);
     return NextResponse.json(
-      { ok: false, error: "server_error" },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }
