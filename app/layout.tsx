@@ -20,10 +20,16 @@ export const metadata: Metadata = {
     maximumScale: 5,
     userScalable: true,
   },
+  manifest: "/manifest.json",
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
     apple: "/favicon.png",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "The Benjamites Ledger",
   },
 };
 
