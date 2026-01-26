@@ -40,10 +40,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${josefin.className} antialiased`}>
-        {children}
-        {/* Analytics temporarily removed for Netlify deployment troubleshooting */}
-      </body>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#000000" />
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/favicon.png" />
+      </head>
+      <body className={`${josefin.className} antialiased`}>{children}</body>
     </html>
   );
 }
