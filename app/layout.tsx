@@ -14,12 +14,6 @@ const josefin = Josefin_Sans({
 export const metadata: Metadata = {
   title: "The Benjamites Ledger",
   description: "Manage your customer debts and payments",
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
-  },
   manifest: "/manifest.json",
   icons: {
     icon: "/favicon.ico",
@@ -31,6 +25,13 @@ export const metadata: Metadata = {
     statusBarStyle: "default",
     title: "The Benjamites Ledger",
   },
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
 };
 
 export default function RootLayout({

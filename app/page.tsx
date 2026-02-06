@@ -9,6 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 async function getDashboardStats() {
   const cookieStore = await cookies();
+  const sessionToken = cookieStore.get("sessionToken")?.value;
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -18,14 +20,17 @@ async function getDashboardStats() {
           return cookieStore.getAll();
         },
         setAll(cookiesToSet) {
-          // No-op: modifying cookies is only allowed in Server Actions or Route Handlers.
-          // Next.js will throw if we try to call `cookieStore.set` here during rendering.
-          // Leave as a no-op to avoid runtime errors; session cookie updates should be
-          // performed from a Server Action or Route Handler instead.
           return;
         },
       },
-    }
+      global: {
+        headers: sessionToken
+          ? {
+              Authorization: `Bearer ${sessionToken}`,
+            }
+          : {},
+      },
+    },
   );
 
   const { data: transactions, error } = await supabase
@@ -56,6 +61,8 @@ async function getDashboardStats() {
 
 async function getCustomerCount() {
   const cookieStore = await cookies();
+  const sessionToken = cookieStore.get("sessionToken")?.value;
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -65,11 +72,17 @@ async function getCustomerCount() {
           return cookieStore.getAll();
         },
         setAll(cookiesToSet) {
-          // No-op for the same reason as above.
           return;
         },
       },
-    }
+      global: {
+        headers: sessionToken
+          ? {
+              Authorization: `Bearer ${sessionToken}`,
+            }
+          : {},
+      },
+    },
   );
 
   const { count, error } = await supabase
@@ -90,32 +103,7 @@ export const metadata = {
 };
 
 export default async function Dashboard() {
-  // Server-side auth check: redirect to /login when no active session
-  const cookieStore = await cookies();
-  const supabaseAuth = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
-          // No-op for the same reason as above.
-          return;
-        },
-      },
-    }
-  );
-
-  const {
-    data: { session },
-  } = await supabaseAuth.auth.getSession();
-
-  if (!session) {
-    redirect("/login");
-  }
-
+  // Auth is handled by middleware - no need for session check here
   const { totalDebt, totalPayment, totalBalance } = await getDashboardStats();
   const customerCount = await getCustomerCount();
 
@@ -154,8 +142,8 @@ export default async function Dashboard() {
                   (totalBalance > 0
                     ? "text-red-600"
                     : totalBalance < 0
-                    ? "text-green-600"
-                    : "text-slate-900")
+                      ? "text-green-600"
+                      : "text-slate-900")
                 }
               >
                 {totalBalance > 0 ? "-" : totalBalance < 0 ? "+" : ""}₦
@@ -168,8 +156,8 @@ export default async function Dashboard() {
                 {totalBalance > 0
                   ? "Outstanding"
                   : totalBalance < 0
-                  ? "Overpaid"
-                  : "Settled"}
+                    ? "Overpaid"
+                    : "Settled"}
               </p>
             </CardContent>
           </Card>

@@ -18,16 +18,20 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      const supabase = getSupabaseClient();
-      const { data, error: signInError } =
-        await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+      // Use server-side login endpoint to set session cookies
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+        credentials: "same-origin",
+      });
 
-      if (signInError) throw signInError;
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Login failed");
+      }
 
-      // Successful login
+      // Successful login - redirect to home
       router.push("/");
     } catch (err) {
       console.error("Login error:", err);

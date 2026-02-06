@@ -14,6 +14,8 @@ interface CustomerDetailPageProps {
 
 async function getCustomer(id: string) {
   const cookieStore = await cookies();
+  const sessionToken = cookieStore.get("sessionToken")?.value;
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -23,13 +25,17 @@ async function getCustomer(id: string) {
           return cookieStore.getAll();
         },
         setAll(cookiesToSet) {
-          cookieStore.getAll();
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options);
-          });
+          return;
         },
       },
-    }
+      global: {
+        headers: sessionToken
+          ? {
+              Authorization: `Bearer ${sessionToken}`,
+            }
+          : {},
+      },
+    },
   );
 
   const { data: customer, error } = await supabase
@@ -49,32 +55,7 @@ async function getCustomer(id: string) {
 export default async function CustomerDetailPage({
   params,
 }: CustomerDetailPageProps) {
-  // Server-side auth check
-  const cookieStore = await cookies();
-  const supabaseAuth = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookieStore.getAll();
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options);
-          });
-        },
-      },
-    }
-  );
-
-  const {
-    data: { session },
-  } = await supabaseAuth.auth.getSession();
-
-  if (!session) redirect("/login");
-
+  // Auth is handled by middleware
   const { id } = await params;
   const customer = await getCustomer(id);
 
