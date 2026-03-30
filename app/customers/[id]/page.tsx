@@ -99,6 +99,18 @@ export default async function CustomerDetailPage({
             {customer.name}
           </h1>
 
+          <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 sm:p-4 mb-6">
+            <p className="text-slate-600 text-sm font-medium">Customer ID</p>
+            <p className="text-base sm:text-lg font-semibold text-slate-900 mt-1">
+              {customer.customer_code || "Not assigned"}
+            </p>
+            {!customer.customer_code && (
+              <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                This customer has not been assigned a login ID yet.
+              </p>
+            )}
+          </div>
+
           {/* Basic Contact Info */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6">
             {customer.phone && (

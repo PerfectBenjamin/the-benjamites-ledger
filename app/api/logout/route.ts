@@ -6,5 +6,7 @@ export async function POST(request: NextRequest) {
   res.cookies.delete("sessionToken");
   res.cookies.delete("refreshToken");
   res.cookies.delete("lastActivity");
+  res.cookies.delete("customerSession");
+  res.cookies.delete("customerLastActivity");
   return res;
 }

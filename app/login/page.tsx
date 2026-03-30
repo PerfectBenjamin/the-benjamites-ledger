@@ -115,6 +115,16 @@ export default function LoginPage() {
             </button>
           </form>
 
+          <div className="mt-4 text-sm text-slate-600">
+            Customer?{" "}
+            <Link
+              href="/customer-login"
+              className="text-teal-700 hover:text-teal-800"
+            >
+              Sign in here
+            </Link>
+          </div>
+
           {/* signup prompt removed per request */}
         </div>
       </div>

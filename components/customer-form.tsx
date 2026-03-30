@@ -34,6 +34,10 @@ export default function CustomerForm({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [newCredentials, setNewCredentials] = useState<{
+    customerCode: string;
+    defaultPin: string;
+  } | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -55,7 +59,7 @@ export default function CustomerForm({
   }, [initialData]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -79,13 +83,40 @@ export default function CustomerForm({
         if (onSuccess) onSuccess();
         else router.refresh();
       } else {
-        const { error: insertError } = await supabase
-          .from("customers")
-          .insert([formData]);
+        const res = await fetch("/api/customers", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "same-origin",
+          body: JSON.stringify(formData),
+        });
 
-        if (insertError) throw insertError;
+        const data = await res.json();
 
-        router.push("/");
+        if (!res.ok) {
+          throw new Error(data.error || "Failed to add customer");
+        }
+
+        setNewCredentials({
+          customerCode: data.customer.customer_code,
+          defaultPin: data.defaultPin,
+        });
+
+        setFormData({
+          name: "",
+          phone: "",
+          email: "",
+          address: "",
+          account_name: "",
+          account_number: "",
+          bank_name: "",
+          guarantor1_name: "",
+          guarantor1_phone: "",
+          guarantor1_address: "",
+          guarantor2_name: "",
+          guarantor2_phone: "",
+          guarantor2_address: "",
+        });
+
         router.refresh();
       }
     } catch (err) {
@@ -368,6 +399,24 @@ export default function CustomerForm({
         </div>
       )}
 
+      {newCredentials && (
+        <div className="bg-emerald-50 border-l-4 border-emerald-500 p-3 md:p-4 rounded">
+          <p className="text-emerald-800 text-base md:text-lg font-semibold">
+            Customer created successfully.
+          </p>
+          <p className="text-emerald-900 mt-1">
+            Customer ID: <strong>{newCredentials.customerCode}</strong>
+          </p>
+          <p className="text-emerald-900 mt-1">
+            Default PIN: <strong>{newCredentials.defaultPin}</strong>
+          </p>
+          <p className="text-emerald-700 text-sm mt-2">
+            Share this with the customer and ask them to change their PIN after
+            first login.
+          </p>
+        </div>
+      )}
+
       <button
         type="submit"
         disabled={loading}
@@ -378,8 +427,8 @@ export default function CustomerForm({
             ? "Saving..."
             : "Adding..."
           : customerId
-          ? "Save Changes"
-          : "Add Customer"}
+            ? "Save Changes"
+            : "Add Customer"}
       </button>
     </form>
   );
