@@ -196,8 +196,9 @@ export default function TransactionList({ customerId }: TransactionListProps) {
 
       // Add a clean header
       const margin = 14;
-      doc.setFillColor(245, 247, 250);
-      doc.rect(0, 0, pageWidth, 50, "F");
+      const rightEdge = pageWidth - margin;
+      const maxInfoWidth = 90; // right-column max width in mm
+      const infoLineHeight = 5.5;
 
       const title =
         filter === "all"
@@ -205,34 +206,62 @@ export default function TransactionList({ customerId }: TransactionListProps) {
           : filter === "debt"
             ? "Debt Transactions"
             : "Payment Transactions";
+
+      // Pre-calculate right-column blocks so we know how tall the header must be
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      const infoBlocks: string[][] = [];
+      if (customer?.name)
+        infoBlocks.push(
+          doc.splitTextToSize(`Name: ${customer.name}`, maxInfoWidth),
+        );
+      if (customer?.phone)
+        infoBlocks.push(
+          doc.splitTextToSize(`Phone: ${customer.phone}`, maxInfoWidth),
+        );
+      if (customer?.email)
+        infoBlocks.push(
+          doc.splitTextToSize(`Email: ${customer.email}`, maxInfoWidth),
+        );
+      if (customer?.address)
+        infoBlocks.push(
+          doc.splitTextToSize(`Address: ${customer.address}`, maxInfoWidth),
+        );
+
+      const totalInfoLines = infoBlocks.reduce((sum, b) => sum + b.length, 0);
+      const headerHeight = Math.max(
+        50,
+        18 + totalInfoLines * infoLineHeight + 12,
+      );
+
+      // Background rect — sized to fit all content
+      doc.setFillColor(245, 247, 250);
+      doc.rect(0, 0, pageWidth, headerHeight, "F");
+
+      // Customer info — left-aligned, labelled, wrapped
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.setTextColor(34, 40, 49);
+      let infoY = 18;
+      infoBlocks.forEach((lines) => {
+        doc.text(lines, margin, infoY);
+        infoY += lines.length * infoLineHeight;
+      });
+
+      // Export date — left-aligned below customer info
+      doc.setFontSize(9);
+      doc.setTextColor(113, 122, 133);
+      doc.text(
+        `Export Date: ${new Date().toLocaleDateString()}`,
+        margin,
+        infoY + 2,
+      );
+
+      // Title — right-aligned
       doc.setFontSize(20);
       doc.setTextColor(34, 40, 49);
       doc.setFont("helvetica", "bold");
-      doc.text(title, margin, 20);
-
-      // Customer block on the right
-      doc.setFontSize(10);
-      doc.setFont("helvetica", "normal");
-      const custLines: string[] = [];
-      if (customer?.name) custLines.push(customer.name);
-      if (customer?.phone) custLines.push(`Phone: ${customer.phone}`);
-      if (customer?.email) custLines.push(`Email: ${customer.email}`);
-      if (customer?.address) custLines.push(`${customer.address}`);
-
-      // right align customer info
-      let infoY = 18;
-      custLines.forEach((line) => {
-        const textWidth = doc.getTextWidth(line);
-        doc.text(line, pageWidth - margin - textWidth, infoY);
-        infoY += 6;
-      });
-
-      // Export date
-      doc.setFontSize(9);
-      doc.setTextColor(113, 122, 133);
-      const dateStr = `Export Date: ${new Date().toLocaleDateString()}`;
-      const dateWidth = doc.getTextWidth(dateStr);
-      doc.text(dateStr, pageWidth - margin - dateWidth, infoY + 2);
+      doc.text(title, rightEdge, 20, { align: "right" });
 
       // Prepare table data with clean amounts
       const nf = new Intl.NumberFormat("en-NG", {
@@ -257,7 +286,7 @@ export default function TransactionList({ customerId }: TransactionListProps) {
       autoTable(doc, {
         head: [["Date", "Type", "Amount (NGN)", "Description"]],
         body: tableData,
-        startY: 58,
+        startY: headerHeight + 8,
         theme: "grid",
         styles: {
           font: "helvetica",

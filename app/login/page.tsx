@@ -44,88 +44,103 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-slate-50 p-4 sm:p-6 md:p-8">
+    <main className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-slate-100 p-4 sm:p-6 md:p-8">
       <div className="w-full max-w-md">
-        <div className="mx-auto bg-white rounded-lg shadow-lg p-6">
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">Sign in</h1>
-          <p className="text-sm text-slate-600 mb-4">
-            Sign in with your email and password
-          </p>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-slate-700 mb-1"
-              >
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full px-3 py-2 border-2 border-slate-300 rounded-lg focus:outline-none focus:border-blue-500"
-                placeholder="you@example.com"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-slate-700 mb-1"
-              >
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="w-full px-3 py-2 pr-10 border-2 border-slate-300 rounded-lg focus:outline-none focus:border-blue-500"
-                  placeholder="your password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
-                  ) : (
-                    <Eye className="h-5 w-5" />
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {error && (
-              <div className="text-red-700 bg-red-50 p-2 rounded">{error}</div>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold px-4 py-2 rounded-lg"
-            >
-              {loading ? "Signing in..." : "Sign in"}
-            </button>
-          </form>
-
-          <div className="mt-4 text-sm text-slate-600">
-            Customer?{" "}
-            <Link
-              href="/customer-login"
-              className="text-teal-700 hover:text-teal-800"
-            >
-              Sign in here
-            </Link>
+        <div className="mx-auto bg-white rounded-2xl shadow-xl overflow-hidden">
+          {/* Logo banner */}
+          <div className="bg-white px-8 pt-8 pb-4 flex items-center justify-center border-b border-slate-100">
+            <img
+              src="/rectangle ben.png"
+              alt="The Benjamites Network Ltd"
+              className="h-16 w-auto object-contain"
+            />
           </div>
 
-          {/* signup prompt removed per request */}
+          <div className="px-8 py-7">
+            <h1 className="text-2xl font-bold text-slate-900 mb-1">
+              Admin Sign in
+            </h1>
+            <p className="text-sm text-slate-500 mb-6">
+              Sign in with your admin email and password
+            </p>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-slate-700 mb-1"
+                >
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full px-3 py-2.5 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
+                  placeholder="you@example.com"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-slate-700 mb-1"
+                >
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="w-full px-3 py-2.5 pr-10 border-2 border-slate-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
+                    placeholder="your password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {error && (
+                <div className="text-red-700 bg-red-50 border border-red-200 p-3 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:bg-slate-400 text-white font-semibold px-4 py-2.5 rounded-lg transition-colors mt-2"
+              >
+                {loading ? "Signing in..." : "Sign in"}
+              </button>
+            </form>
+
+            <div className="mt-5 pt-5 border-t border-slate-100">
+              <p className="text-sm text-slate-500 mb-3 text-center">
+                Are you a customer?
+              </p>
+              <Link
+                href="/customer-login"
+                className="flex items-center justify-center w-full border-2 border-teal-600 text-teal-700 hover:bg-teal-50 active:bg-teal-100 font-semibold px-4 py-2.5 rounded-lg transition-colors text-sm"
+              >
+                Customer Sign In
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </main>

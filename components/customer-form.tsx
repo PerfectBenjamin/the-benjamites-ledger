@@ -55,7 +55,13 @@ export default function CustomerForm({
   });
 
   useEffect(() => {
-    if (initialData) setFormData((prev) => ({ ...prev, ...initialData }));
+    if (initialData) {
+      const sanitized = Object.fromEntries(
+        Object.entries(initialData).map(([k, v]) => [k, v == null ? "" : v]),
+      ) as Partial<typeof formData>;
+
+      setFormData((prev) => ({ ...prev, ...sanitized }));
+    }
   }, [initialData]);
 
   const handleChange = (

@@ -138,7 +138,7 @@ export default async function CustomerDetailPage({
                 <p className="text-slate-600 text-sm sm:text-base font-medium">
                   Address
                 </p>
-                <p className="text-lg sm:text-xl md:text-2xl text-slate-900 font-semibold wrap-break-word">
+                <p className="text-lg sm:text-xl md:text-2xl text-slate-900 font-semibold wrap-break-word whitespace-pre-wrap">
                   {customer.address}
                 </p>
               </div>
@@ -206,7 +206,7 @@ export default async function CustomerDetailPage({
                       </p>
                     )}
                     {customer.guarantor1_address && (
-                      <p className="text-base sm:text-lg text-slate-600 mt-1">
+                      <p className="text-base sm:text-lg text-slate-600 mt-1 whitespace-pre-wrap">
                         {customer.guarantor1_address}
                       </p>
                     )}
@@ -227,7 +227,7 @@ export default async function CustomerDetailPage({
                       </p>
                     )}
                     {customer.guarantor2_address && (
-                      <p className="text-base sm:text-lg text-slate-600 mt-1">
+                      <p className="text-base sm:text-lg text-slate-600 mt-1 whitespace-pre-wrap">
                         {customer.guarantor2_address}
                       </p>
                     )}

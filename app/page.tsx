@@ -2,10 +2,8 @@ import { createServerClient } from "@supabase/ssr";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import Link from "next/link";
-import Image from "next/image";
 import { Wallet, TrendingUp, TrendingDown, Users } from "lucide-react";
 import LogoutButton from "@/components/logout-button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 async function getDashboardStats() {
   const cookieStore = await cookies();
@@ -108,136 +106,162 @@ export default async function Dashboard() {
   const customerCount = await getCustomerCount();
 
   return (
-    <main className="min-h-screen bg-linear-to-br from-blue-50 to-slate-50 p-3 sm:p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 md:mb-8">
-          <div className="w-full sm:w-auto">
-            <img
-              src="/rectangle ben.png"
-              alt="The Benjamites Network Limited"
-              className="h-16 sm:h-20 md:h-24 w-auto mb-2"
-            />
-            <p className="text-sm sm:text-base md:text-lg text-slate-600">
-              Dashboard Overview
-            </p>
-          </div>
+    <main className="min-h-screen bg-slate-100">
+      {/* Top nav bar */}
+      <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 py-3 flex items-center justify-between gap-4">
+          <img
+            src="/rectangle ben.png"
+            alt="The Benjamites Network Limited"
+            className="h-10 sm:h-12 w-auto object-contain"
+          />
           <LogoutButton />
         </div>
+      </header>
 
-        {/* Dashboard Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
-          {/* Total Balance Card */}
-          <Card className="bg-white shadow-lg">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 py-6 md:py-10">
+        {/* Page heading */}
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">
+            Dashboard
+          </h1>
+          <p className="text-slate-500 text-sm sm:text-base mt-1">
+            Welcome back. Here's an overview of all accounts.
+          </p>
+        </div>
+
+        {/* Stats grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+          {/* Total Balance */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-semibold text-slate-500 uppercase tracking-wide">
                 Total Balance
-              </CardTitle>
-              <Wallet className="h-5 w-5 text-blue-600" />
-            </CardHeader>
-            <CardContent>
-              <div
-                className={
-                  "text-2xl font-bold " +
-                  (totalBalance > 0
-                    ? "text-red-600"
-                    : totalBalance < 0
-                      ? "text-green-600"
-                      : "text-slate-900")
-                }
+              </span>
+              <span
+                className={`flex items-center justify-center w-10 h-10 rounded-xl ${totalBalance > 0 ? "bg-red-100" : totalBalance < 0 ? "bg-green-100" : "bg-slate-100"}`}
+              >
+                <Wallet
+                  className={`h-5 w-5 ${totalBalance > 0 ? "text-red-600" : totalBalance < 0 ? "text-green-600" : "text-slate-600"}`}
+                />
+              </span>
+            </div>
+            <div>
+              <p
+                className={`text-2xl sm:text-3xl font-bold tracking-tight ${totalBalance > 0 ? "text-red-600" : totalBalance < 0 ? "text-green-600" : "text-slate-900"}`}
               >
                 {totalBalance > 0 ? "-" : totalBalance < 0 ? "+" : ""}₦
                 {Math.abs(totalBalance).toLocaleString("en-NG", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
-              </div>
-              <p className="text-xs text-slate-500 mt-1">
+              </p>
+              <p className="text-xs text-slate-400 mt-1">
                 {totalBalance > 0
-                  ? "Outstanding"
+                  ? "Outstanding balance"
                   : totalBalance < 0
                     ? "Overpaid"
-                    : "Settled"}
+                    : "Fully settled"}
               </p>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
 
-          {/* Total Debt Card */}
-          <Card className="bg-white shadow-lg">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600">
+          {/* Total Debt */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-semibold text-slate-500 uppercase tracking-wide">
                 Total Debt
-              </CardTitle>
-              <TrendingUp className="h-5 w-5 text-red-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-slate-900">
+              </span>
+              <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-orange-100">
+                <TrendingUp className="h-5 w-5 text-orange-600" />
+              </span>
+            </div>
+            <div>
+              <p className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
                 ₦
                 {totalDebt.toLocaleString("en-NG", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
-              </div>
-              <p className="text-xs text-slate-500 mt-1">Total amount owed</p>
-            </CardContent>
-          </Card>
+              </p>
+              <p className="text-xs text-slate-400 mt-1">Total amount owed</p>
+            </div>
+          </div>
 
-          {/* Total Payment Card */}
-          <Card className="bg-white shadow-lg">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600">
+          {/* Total Payment */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-semibold text-slate-500 uppercase tracking-wide">
                 Total Payment
-              </CardTitle>
-              <TrendingDown className="h-5 w-5 text-green-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-slate-900">
+              </span>
+              <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-green-100">
+                <TrendingDown className="h-5 w-5 text-green-600" />
+              </span>
+            </div>
+            <div>
+              <p className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
                 ₦
                 {totalPayment.toLocaleString("en-NG", {
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2,
                 })}
-              </div>
-              <p className="text-xs text-slate-500 mt-1">Total received</p>
-            </CardContent>
-          </Card>
+              </p>
+              <p className="text-xs text-slate-400 mt-1">Total received</p>
+            </div>
+          </div>
 
-          {/* Total Customers Card */}
-          <Card className="bg-white shadow-lg">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-600">
-                Total Customers
-              </CardTitle>
-              <Users className="h-5 w-5 text-purple-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-slate-900">
+          {/* Total Customers */}
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-semibold text-slate-500 uppercase tracking-wide">
+                Customers
+              </span>
+              <span className="flex items-center justify-center w-10 h-10 rounded-xl bg-purple-100">
+                <Users className="h-5 w-5 text-purple-600" />
+              </span>
+            </div>
+            <div>
+              <p className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900">
                 {customerCount}
-              </div>
-              <p className="text-xs text-slate-500 mt-1">Active accounts</p>
-            </CardContent>
-          </Card>
+              </p>
+              <p className="text-xs text-slate-400 mt-1">Active accounts</p>
+            </div>
+          </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-xl font-semibold text-slate-900 mb-4">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+          <h2 className="text-lg font-bold text-slate-800 mb-4">
             Quick Actions
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Link
               href="/customers"
-              className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold px-6 py-4 rounded-lg transition-colors text-base"
+              className="flex items-center gap-4 bg-blue-50 hover:bg-blue-100 active:bg-blue-200 border border-blue-200 text-blue-800 font-semibold px-5 py-4 rounded-xl transition-colors"
             >
-              <Users size={20} />
-              <span>View All Customers</span>
+              <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-600 text-white shrink-0">
+                <Users size={20} />
+              </span>
+              <div>
+                <p className="font-semibold text-base">View All Customers</p>
+                <p className="text-xs text-blue-600 font-normal">
+                  Browse and manage accounts
+                </p>
+              </div>
             </Link>
             <Link
               href="/customers/new"
-              className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white font-semibold px-6 py-4 rounded-lg transition-colors text-base"
+              className="flex items-center gap-4 bg-green-50 hover:bg-green-100 active:bg-green-200 border border-green-200 text-green-800 font-semibold px-5 py-4 rounded-xl transition-colors"
             >
-              <Users size={20} />
-              <span>Add New Customer</span>
+              <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-green-600 text-white shrink-0">
+                <Users size={20} />
+              </span>
+              <div>
+                <p className="font-semibold text-base">Add New Customer</p>
+                <p className="text-xs text-green-600 font-normal">
+                  Register a new account
+                </p>
+              </div>
             </Link>
           </div>
         </div>
