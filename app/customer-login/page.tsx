@@ -57,7 +57,7 @@ export default function CustomerLoginPage() {
           {/* Logo banner */}
           <div className="bg-white px-8 pt-8 pb-4 flex items-center justify-center border-b border-slate-100">
             <img
-              src="/rectangle ben.png"
+              src="/rectangle-ben.png"
               alt="The Benjamites Network Ltd"
               className="h-16 w-auto object-contain"
             />

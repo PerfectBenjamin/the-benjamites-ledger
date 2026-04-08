@@ -111,7 +111,7 @@ export default async function Dashboard() {
       <header className="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 md:px-8 py-3 flex items-center justify-between gap-4">
           <img
-            src="/rectangle ben.png"
+            src="/rectangle-ben.png"
             alt="The Benjamites Network Limited"
             className="h-10 sm:h-12 w-auto object-contain"
           />

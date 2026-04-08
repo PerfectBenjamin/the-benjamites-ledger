@@ -143,6 +143,7 @@ export async function middleware(req: NextRequest) {
     "/_next",
     "/favicon",
     "/manifest.json",
+    "/rectangle-ben.png",
   ];
   if (publicPaths.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();
