@@ -15,16 +15,13 @@ export async function POST(request: NextRequest) {
   // Invalidate the token on Supabase's server so it can't be reused
   if (sessionToken) {
     try {
-      await fetch(
-        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/logout`,
-        {
-          method: "POST",
-          headers: {
-            apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
-            Authorization: `Bearer ${sessionToken}`,
-          },
+      await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/logout`, {
+        method: "POST",
+        headers: {
+          apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "",
+          Authorization: `Bearer ${sessionToken}`,
         },
-      );
+      });
     } catch {
       // best-effort — proceed with cookie clearing regardless
     }
