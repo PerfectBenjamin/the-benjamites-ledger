@@ -266,16 +266,8 @@ export default function TransactionList({ customerId }: TransactionListProps) {
         );
 
       const totalInfoLines = infoBlocks.reduce((sum, b) => sum + b.length, 0);
-      const headerHeight = Math.max(
-        50 + contentOffset,
-        contentOffset + 18 + totalInfoLines * infoLineHeight + 12,
-      );
 
-      // Background rect — sized to fit all content
-      doc.setFillColor(245, 247, 250);
-      doc.rect(0, 0, pageWidth, headerHeight, "F");
-
-      // Logo — centred at the top of the header
+      // Logo — centred at the top of the page
       if (logoDataUrl && logoW > 0 && logoH > 0) {
         const logoX = (pageWidth - logoW) / 2;
         doc.addImage(logoDataUrl, "PNG", logoX, logoTopPad, logoW, logoH);
@@ -300,11 +292,22 @@ export default function TransactionList({ customerId }: TransactionListProps) {
         infoY + 2,
       );
 
-      // Title — right-aligned
+      // Title — right-aligned, vertically centred in the info block
       doc.setFontSize(20);
       doc.setTextColor(34, 40, 49);
       doc.setFont("helvetica", "bold");
       doc.text(title, rightEdge, 20 + contentOffset, { align: "right" });
+
+      // Decorative divider line below the info block
+      const dividerY = infoY + 8;
+      doc.setDrawColor(36, 58, 86); // dark navy — thick top rule
+      doc.setLineWidth(0.8);
+      doc.line(margin, dividerY, rightEdge, dividerY);
+      doc.setDrawColor(185, 30, 40); // red accent — thin bottom rule
+      doc.setLineWidth(0.3);
+      doc.line(margin, dividerY + 1.2, rightEdge, dividerY + 1.2);
+
+      const headerHeight = dividerY + 1.2;
 
       // Prepare table data with clean amounts
       const nf = new Intl.NumberFormat("en-NG", {
