@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { getSupabaseClient } from "./supabase-client";
 
 export default function LogoutButton() {
   const router = useRouter();
@@ -12,22 +11,15 @@ export default function LogoutButton() {
     if (!confirm("Are you sure you want to sign out?")) return;
     setLoading(true);
     try {
-      const supabase = getSupabaseClient();
-      await supabase.auth.signOut();
       await fetch("/api/logout", {
         method: "POST",
         credentials: "same-origin",
       });
-      router.push("/login");
     } catch (err) {
       console.error("Logout error:", err);
-      await fetch("/api/logout", {
-        method: "POST",
-        credentials: "same-origin",
-      }).catch(() => {});
-      router.push("/login");
     } finally {
       setLoading(false);
+      router.push("/login");
     }
   };
 
