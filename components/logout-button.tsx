@@ -13,11 +13,18 @@ export default function LogoutButton() {
     setLoading(true);
     try {
       const supabase = getSupabaseClient();
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      await supabase.auth.signOut();
+      await fetch("/api/logout", {
+        method: "POST",
+        credentials: "same-origin",
+      });
       router.push("/login");
     } catch (err) {
       console.error("Logout error:", err);
+      await fetch("/api/logout", {
+        method: "POST",
+        credentials: "same-origin",
+      }).catch(() => {});
       router.push("/login");
     } finally {
       setLoading(false);
