@@ -194,6 +194,43 @@ export default function TransactionList({ customerId }: TransactionListProps) {
       const doc = new jsPDF();
       const pageWidth = doc.internal.pageSize.getWidth();
 
+      // Load logo image
+      let logoDataUrl: string | null = null;
+      let logoW = 0;
+      let logoH = 0;
+      try {
+        const imgRes = await fetch("/rectangle-ben.png");
+        const blob = await imgRes.blob();
+        logoDataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+        await new Promise<void>((resolve) => {
+          const img = new Image();
+          img.onload = () => {
+            const maxH = 18;
+            const scale = Math.min(
+              (pageWidth - 28) / img.naturalWidth,
+              maxH / img.naturalHeight,
+            );
+            logoW = img.naturalWidth * scale;
+            logoH = img.naturalHeight * scale;
+            resolve();
+          };
+          img.onerror = () => resolve();
+          img.src = logoDataUrl!;
+        });
+      } catch {
+        // proceed without logo
+      }
+
+      const logoTopPad = 6;
+      const logoBotPad = 4;
+      const contentOffset =
+        logoDataUrl && logoH > 0 ? logoTopPad + logoH + logoBotPad : 0;
+
       // Add a clean header
       const margin = 14;
       const rightEdge = pageWidth - margin;
@@ -230,19 +267,25 @@ export default function TransactionList({ customerId }: TransactionListProps) {
 
       const totalInfoLines = infoBlocks.reduce((sum, b) => sum + b.length, 0);
       const headerHeight = Math.max(
-        50,
-        18 + totalInfoLines * infoLineHeight + 12,
+        50 + contentOffset,
+        contentOffset + 18 + totalInfoLines * infoLineHeight + 12,
       );
 
       // Background rect — sized to fit all content
       doc.setFillColor(245, 247, 250);
       doc.rect(0, 0, pageWidth, headerHeight, "F");
 
+      // Logo — centred at the top of the header
+      if (logoDataUrl && logoW > 0 && logoH > 0) {
+        const logoX = (pageWidth - logoW) / 2;
+        doc.addImage(logoDataUrl, "PNG", logoX, logoTopPad, logoW, logoH);
+      }
+
       // Customer info — left-aligned, labelled, wrapped
       doc.setFontSize(10);
       doc.setFont("helvetica", "normal");
       doc.setTextColor(34, 40, 49);
-      let infoY = 18;
+      let infoY = 18 + contentOffset;
       infoBlocks.forEach((lines) => {
         doc.text(lines, margin, infoY);
         infoY += lines.length * infoLineHeight;
@@ -261,7 +304,7 @@ export default function TransactionList({ customerId }: TransactionListProps) {
       doc.setFontSize(20);
       doc.setTextColor(34, 40, 49);
       doc.setFont("helvetica", "bold");
-      doc.text(title, rightEdge, 20, { align: "right" });
+      doc.text(title, rightEdge, 20 + contentOffset, { align: "right" });
 
       // Prepare table data with clean amounts
       const nf = new Intl.NumberFormat("en-NG", {
